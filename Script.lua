@@ -1,182 +1,221 @@
 task.spawn(function()
 
-local _0=game:GetService("Players")
-local _1=game:GetService("UserInputService")
-local _2=_0.LocalPlayer
+local a=game:GetService("Players")
+local b=game:GetService("UserInputService")
+local c=game:GetService("TweenService")
+local d=a.LocalPlayer
 
-local function _3(n)return string.char(n)end
+local e={}
 
-local function _4()
-	for _,v in pairs(workspace:GetChildren()) do
-		if v.ClassName==("Mo".."del") and v:FindFirstChild(("Tu".."ner")) then
-			if string.find(string.lower(v.Name),string.lower(_2.Name)) then
-				return v
-			end
-		end
-	end
+local function f(t)
+return string.char(table.unpack(t))
 end
 
-local function _5(c)
-	local k={
-		_3(80).._3(101).._3(97).._3(107).._3(82).._3(80).._3(77),
-		_3(82).._3(101).._3(100).._3(108).._3(105).._3(110).._3(101),
-		_3(69).._3(113).._3(80).._3(111).._3(105).._3(110).._3(116),
-		_3(72).._3(111).._3(114).._3(115).._3(101).._3(112).._3(111).._3(119).._3(101).._3(114)
-	}
-	
-	local v={
-		2^14,
-		2^14+1000,
-		15500,
-		55*2
-	}
-	
-	for i=1,#k do c[k[i]]=v[i] end
-	
-	c[("Ra".."tios")]={0,14,9,6,4.5,3.2,1.8}
-	c[("Au".."toUpThresh")]=16500
-	c[("Au".."toDownThresh")]=3000
-	c[("Li".."miter")]=false
-	c[("FT".."ireFriction")]=20
-	c[("RT".."ireFriction")]=22
-end
-
-local function _6(s)
-	return (s:gsub(".",function(c)return string.char(c:byte()-1)end))
-end
-
--- UI
-local g=Instance.new("ScreenGui",game.CoreGui)
-
-local m=Instance.new("Frame",g)
-m.Size=UDim2.new(0,260,0,300)
-m.Position=UDim2.new(0.5,-130,0.5,-150)
-m.BackgroundColor3=Color3.fromRGB(25,25,25)
-
-local t=Instance.new("Frame",m)
-t.Size=UDim2.new(1,0,0,30)
-t.BackgroundColor3=Color3.fromRGB(35,35,35)
-
-local tt=Instance.new("TextLabel",t)
-tt.Size=UDim2.new(1,0,1,0)
-tt.BackgroundTransparency=1
-tt.Text=".gg/bWVuUMTPAE | By Resenzz"
-tt.TextColor3=Color3.new(1,1,1)
-tt.Font=Enum.Font.Gotham
-tt.TextSize=14
-
--- drag (pc + phone)
-local d=false
-local ds,sp
-
-t.InputBegan:Connect(function(i)
-	if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
-		d=true
-		ds=i.Position
-		sp=m.Position
-		i.Changed:Connect(function()
-			if i.UserInputState==Enum.UserInputState.End then d=false end
-		end)
-	end
-end)
-
-_1.InputChanged:Connect(function(i)
-	if d and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
-		local dx=i.Position-ds
-		m.Position=UDim2.new(sp.X.Scale,sp.X.Offset+dx.X,sp.Y.Scale,sp.Y.Offset+dx.Y)
-	end
-end)
-
--- tabs
-local tb=Instance.new("Frame",m)
-tb.Position=UDim2.new(0,0,0,30)
-tb.Size=UDim2.new(1,0,0,30)
-tb.BackgroundColor3=Color3.fromRGB(30,30,30)
-
-local function B(p,s,x)
-	local b=Instance.new("TextButton",p)
-	b.Size=UDim2.new(s,0,1,0)
-	b.Position=x
-	b.BackgroundColor3=Color3.fromRGB(40,40,40)
-	b.TextColor3=Color3.new(1,1,1)
-	return b
-end
-
-local b1=B(tb,0.33,UDim2.new(0,0,0,0)) b1.Text="Main"
-local b2=B(tb,0.33,UDim2.new(0.33,0,0,0)) b2.Text="Teleports"
-local b3=B(tb,0.34,UDim2.new(0.66,0,0,0)) b3.Text="Extra"
-
-local c=Instance.new("Frame",m)
-c.Position=UDim2.new(0,0,0,60)
-c.Size=UDim2.new(1,0,1,-60)
-c.BackgroundTransparency=1
-
-local p1=Instance.new("Frame",c) p1.Size=UDim2.new(1,0,1,0) p1.BackgroundTransparency=1
-local p2=Instance.new("Frame",c) p2.Size=UDim2.new(1,0,1,0) p2.BackgroundTransparency=1 p2.Visible=false
-local p3=Instance.new("Frame",c) p3.Size=UDim2.new(1,0,1,0) p3.BackgroundTransparency=1 p3.Visible=false
-
-b1.MouseButton1Click:Connect(function() p1.Visible=true p2.Visible=false p3.Visible=false end)
-b2.MouseButton1Click:Connect(function() p1.Visible=false p2.Visible=true p3.Visible=false end)
-b3.MouseButton1Click:Connect(function() p1.Visible=false p2.Visible=false p3.Visible=true end)
-
-local function mk(p,y,t,f)
-	local b=Instance.new("TextButton",p)
-	b.Size=UDim2.new(1,-10,0,30)
-	b.Position=UDim2.new(0,5,0,y)
-	b.BackgroundColor3=Color3.fromRGB(50,50,50)
-	b.TextColor3=Color3.new(1,1,1)
-	b.Text=t
-	b.Font=Enum.Font.Gotham
-	b.TextSize=14
-	b.MouseButton1Click:Connect(f)
-end
-
--- boost
-mk(p1,10,"Boost",function()
-	local bk=_4()
-	if not bk then return end
-	local tn=bk:FindFirstChild(("Tu".."ner"))
-	if not tn then return end
-	local ok,cfg=pcall(require,tn)
-	if ok then _5(cfg) end
-end)
-
--- tp
-local function tp(v)
-	local c=_2.Character
-	if c and c:FindFirstChild("HumanoidRootPart") then
-		c.HumanoidRootPart.CFrame=CFrame.new(v+Vector3.new(0,3,0))
-	end
-end
-
-local L={
-{"Spawn",Vector3.new(-482,5,14)},
-{"Motari",Vector3.new(368,5,2559)},
-{"Talli",Vector3.new(4570,0,-80)},
-{"Smarket",Vector3.new(-835,5,-410)},
-{"Vesitorni",Vector3.new(105,-155,0)},
-{"Korkein Katto",Vector3.new(-1219,105,-155)}
+local T={
+t={68,101,98,117,103,32,77,101,110,117},
+b={66,111,111,115,116},
+m={45},
+x={88},
+s={83,112,97,119,110},
+o={77,111,116,97,114,105},
+u={83,109,97,114,107,101,116}
 }
 
-for i,v in ipairs(L) do
-	mk(p2,(i-1)*35,v[1],function() tp(v[2]) end)
+local function g()
+for _,v in pairs(workspace:GetChildren()) do
+if v.ClassName=="Model" and v:FindFirstChild("Tuner") then
+if string.find(string.lower(v.Name),string.lower(d.Name)) then
+return v end end end end
+
+local function h(i,j)
+local k=j or 1
+if not e.p then
+e.p=i.PeakRPM
+e.r=i.Redline
+e.h=i.Horsepower
+e.l=i.SpeedLimit
+end
+i.PeakRPM=16000*k
+i.Redline=17000*k
+i.Horsepower=110*k
+i.SpeedLimit=3000*k
 end
 
--- discord
-mk(p3,10,"Discord",function()
-	setclipboard(_6("iuuqt;00ejtdpse/hh0cXWvVNURBF"))
+local l=Instance.new("ScreenGui",game.CoreGui)
+local m=Instance.new("Frame",l)
+m.Size=UDim2.new(0,280,0,360)
+m.Position=UDim2.new(0.5,-140,0.5,-180)
+m.BackgroundColor3=Color3.fromRGB(25,25,25)
+
+local n=Instance.new("Frame",m)
+n.Size=UDim2.new(1,0,0,32)
+n.BackgroundColor3=Color3.fromRGB(20,20,20)
+
+local o=Instance.new("TextLabel",n)
+o.Size=UDim2.new(1,0,1,0)
+o.BackgroundTransparency=1
+o.Text=f(T.t)
+o.TextColor3=Color3.new(1,1,1)
+o.Font=Enum.Font.Gotham
+o.TextSize=14
+
+local p=Instance.new("TextButton",n)
+p.Size=UDim2.new(0,28,0,24)
+p.Position=UDim2.new(1,-65,0.5,-12)
+p.BackgroundColor3=Color3.fromRGB(50,50,50)
+p.Text=f(T.m)
+p.TextColor3=Color3.new(1,1,1)
+
+local q=Instance.new("TextButton",n)
+q.Size=UDim2.new(0,28,0,24)
+q.Position=UDim2.new(1,-32,0.5,-12)
+q.BackgroundColor3=Color3.fromRGB(50,50,50)
+q.Text=f(T.x)
+q.TextColor3=Color3.new(1,1,1)
+
+local r=false local s,t
+
+n.InputBegan:Connect(function(i)
+if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+r=true s=i.Position t=m.Position
+i.Changed:Connect(function()
+if i.UserInputState==Enum.UserInputState.End then r=false end end)
+end end)
+
+b.InputChanged:Connect(function(i)
+if r and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+local u=i.Position-s
+m.Position=UDim2.new(t.X.Scale,t.X.Offset+u.X,t.Y.Scale,t.Y.Offset+u.Y)
+end end)
+
+local v=Instance.new("Frame",m)
+v.Position=UDim2.new(0,0,0,32)
+v.Size=UDim2.new(1,0,0,32)
+v.BackgroundColor3=Color3.fromRGB(30,30,30)
+
+local function w(x,y)
+local z=Instance.new("TextButton",v)
+z.Size=UDim2.new(0.33,0,1,0)
+z.Position=UDim2.new(y,0,0,0)
+z.Text=x
+z.TextColor3=Color3.new(1,1,1)
+z.BackgroundColor3=Color3.fromRGB(50,50,50)
+return z
+end
+
+local A=w("Main",0)
+local B=w("Teleports",0.33)
+local C=w("Extra",0.66)
+
+local D=Instance.new("Frame",m)
+D.Position=UDim2.new(0,0,0,64)
+D.Size=UDim2.new(1,0,1,-64)
+D.BackgroundTransparency=1
+
+local E=Instance.new("Frame",D)
+local F=Instance.new("Frame",D)
+local G=Instance.new("Frame",D)
+F.Visible=false G.Visible=false
+E.BackgroundTransparency=1 F.BackgroundTransparency=1 G.BackgroundTransparency=1
+
+A.MouseButton1Click:Connect(function() E.Visible=true F.Visible=false G.Visible=false end)
+B.MouseButton1Click:Connect(function() E.Visible=false F.Visible=true G.Visible=false end)
+C.MouseButton1Click:Connect(function() E.Visible=false F.Visible=false G.Visible=false end)
+
+local H=false
+
+local I=Instance.new("Frame",E)
+I.Size=UDim2.new(0,220,0,32)
+I.Position=UDim2.new(0,10,0,10)
+I.BackgroundColor3=Color3.fromRGB(50,50,50)
+
+local J=Instance.new("Frame",I)
+J.Size=UDim2.new(0,26,0,26)
+J.Position=UDim2.new(0,3,0.5,-13)
+J.BackgroundColor3=Color3.fromRGB(200,0,0)
+
+local K=Instance.new("TextLabel",I)
+K.Size=UDim2.new(1,0,1,0)
+K.BackgroundTransparency=1
+K.Text=f(T.b)
+K.TextColor3=Color3.new(1,1,1)
+
+I.InputBegan:Connect(function(i)
+if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+H=not H
+if H then
+J:TweenPosition(UDim2.new(1,-29,0.5,-13),"Out","Quad",0.2,true)
+J.BackgroundColor3=Color3.fromRGB(0,170,0)
+else
+J:TweenPosition(UDim2.new(0,3,0.5,-13),"Out","Quad",0.2,true)
+J.BackgroundColor3=Color3.fromRGB(200,0,0)
+end
+end end)
+
+task.spawn(function()
+while task.wait() do
+local L=g()
+if L then
+local M=L:FindFirstChild("Tuner")
+if M then
+local ok,N=pcall(require,M)
+if ok and N then
+if H then
+h(N,1)
+else
+if e.p then
+N.PeakRPM=e.p
+N.Redline=e.r
+N.Horsepower=e.h
+N.SpeedLimit=e.l
+end
+end
+end
+end
+end
+end
 end)
 
--- speed loop
-task.spawn(function()
-	while task.wait() do
-		local c=_2.Character
-		if c and c:FindFirstChild("HumanoidRootPart") then
-			if _1:IsKeyDown(Enum.KeyCode.W) or _1:IsKeyDown(Enum.KeyCode.Up) then
-				c.HumanoidRootPart.Velocity*=1.07
-			end
-		end
-	end
+local function O(P)
+local Q=d.Character
+if Q and Q:FindFirstChild("HumanoidRootPart") then
+Q.HumanoidRootPart.CFrame=CFrame.new(P+Vector3.new(0,3,0))
+end
+end
+
+local R={
+{f(T.s),Vector3.new(-482,5,14)},
+{f(T.o),Vector3.new(368,5,2559)},
+{f(T.u),Vector3.new(-835,5,-410)}
+}
+
+for i,v in ipairs(R) do
+local S=Instance.new("TextButton",F)
+S.Size=UDim2.new(1,-20,0,32)
+S.Position=UDim2.new(0,10,0,(i-1)*38)
+S.Text=v[1]
+S.BackgroundColor3=Color3.fromRGB(50,50,50)
+S.TextColor3=Color3.new(1,1,1)
+S.MouseButton1Click:Connect(function() O(v[2]) end)
+end
+
+local U=false
+
+p.MouseButton1Click:Connect(function()
+U=not U
+if U then
+c:Create(m,TweenInfo.new(0.25),{Size=UDim2.new(0,280,0,32)}):Play()
+v.Visible=false
+D.Visible=false
+else
+c:Create(m,TweenInfo.new(0.25),{Size=UDim2.new(0,280,0,360)}):Play()
+v.Visible=true
+D.Visible=true
+end
+end)
+
+q.MouseButton1Click:Connect(function()
+l:Destroy()
 end)
 
 end)
