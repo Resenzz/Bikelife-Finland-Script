@@ -1,0 +1,259 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local plr = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = plr:WaitForChild("PlayerGui")
+gui.ResetOnSpawn = false
+
+local DISCORD = "https://discord.gg/bWVuUMTPAE"
+
+local function getBike()
+	for _,v in pairs(workspace:GetChildren()) do
+		if v:IsA("Model") and v:FindFirstChild("Tuner") then
+			if string.find(string.lower(v.Name), string.lower(plr.Name)) then
+				return v
+			end
+		end
+	end
+end
+
+local function drag(frame, top)
+	local dragging = false
+	local start, pos
+
+	top.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			start = i.Position
+			pos = frame.Position
+
+			i.Changed:Connect(function()
+				if i.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(i)
+		if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
+			local d = i.Position - start
+			frame.Position = UDim2.new(pos.X.Scale, pos.X.Offset + d.X, pos.Y.Scale, pos.Y.Offset + d.Y)
+		end
+	end)
+end
+
+local function createEditor(size, pos)
+	local frame = Instance.new("Frame")
+	frame.Parent = gui
+	frame.Size = size
+	frame.Position = pos
+	frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+	local top = Instance.new("Frame")
+	top.Parent = frame
+	top.Size = UDim2.new(1,0,0,28)
+	top.BackgroundColor3 = Color3.fromRGB(20,20,20)
+
+	local title = Instance.new("TextLabel")
+	title.Parent = top
+	title.Size = UDim2.new(1,-90,1,0)
+	title.Position = UDim2.new(0,5,0,0)
+	title.BackgroundTransparency = 1
+	title.Text = "RSZ | Tuner"
+	title.TextColor3 = Color3.new(1,1,1)
+	title.TextXAlignment = Enum.TextXAlignment.Left
+
+	local min = Instance.new("TextButton")
+	min.Parent = top
+	min.Size = UDim2.new(0,24,0,20)
+	min.Position = UDim2.new(1,-55,0.5,-10)
+	min.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	min.Text = "-"
+
+	local close = Instance.new("TextButton")
+	close.Parent = top
+	close.Size = UDim2.new(0,24,0,20)
+	close.Position = UDim2.new(1,-28,0.5,-10)
+	close.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	close.Text = "X"
+
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Parent = frame
+	scroll.Size = UDim2.new(1,-10,1,-40)
+	scroll.Position = UDim2.new(0,5,0,30)
+	scroll.BackgroundTransparency = 1
+	scroll.ScrollBarThickness = 4
+
+	local apply = Instance.new("TextButton")
+	apply.Parent = frame
+	apply.Size = UDim2.new(1,-10,0,28)
+	apply.Position = UDim2.new(0,5,1,-30)
+	apply.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	apply.Text = "APPLY"
+
+	drag(frame, top)
+
+	local minimized = false
+
+	min.MouseButton1Click:Connect(function()
+		minimized = not minimized
+
+		if minimized then
+			frame.Size = UDim2.new(0, frame.Size.X.Offset, 0, 28)
+			scroll.Visible = false
+			apply.Visible = false
+		else
+			frame.Size = size
+			scroll.Visible = true
+			apply.Visible = true
+		end
+	end)
+
+	close.MouseButton1Click:Connect(function()
+		frame:Destroy()
+	end)
+
+	local function load()
+		scroll:ClearAllChildren()
+
+		local bike = getBike()
+		if not bike then return end
+
+		local tuner = bike:FindFirstChild("Tuner")
+		if not tuner then return end
+
+		local ok, cfg = pcall(require, tuner)
+		if not ok or not cfg then return end
+
+		local y = 0
+
+		for k,v in pairs(cfg) do
+			if type(v) ~= "table" then
+				local box = Instance.new("TextBox")
+				box.Parent = scroll
+				box.Size = UDim2.new(1,-5,0,24)
+				box.Position = UDim2.new(0,0,0,y)
+				box.BackgroundColor3 = Color3.fromRGB(40,40,40)
+				box.TextColor3 = Color3.new(1,1,1)
+				box.TextSize = 12
+				box.ClearTextOnFocus = false
+				box.Text = k .. " = " .. tostring(v)
+
+				y += 26
+			end
+		end
+
+		scroll.CanvasSize = UDim2.new(0,0,0,y)
+	end
+
+	apply.MouseButton1Click:Connect(function()
+		local bike = getBike()
+		if not bike then return end
+
+		local tuner = bike:FindFirstChild("Tuner")
+		if not tuner then return end
+
+		local ok, cfg = pcall(require, tuner)
+		if not ok or not cfg then return end
+
+		for _,obj in pairs(scroll:GetChildren()) do
+			if obj:IsA("TextBox") then
+				local k,v = obj.Text:match("(.+) = (.+)")
+				if k and v then
+					local num = tonumber(v)
+					if num then
+						cfg[k] = num
+					end
+				end
+			end
+		end
+	end)
+
+	load()
+end
+
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0,180,0,150)
+main.Position = UDim2.new(0,10,0.5,-75)
+main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+local top = Instance.new("Frame")
+top.Parent = main
+top.Size = UDim2.new(1,0,0,28)
+top.BackgroundColor3 = Color3.fromRGB(20,20,20)
+
+local title = Instance.new("TextLabel")
+title.Parent = top
+title.Size = UDim2.new(1,-60,1,0)
+title.Position = UDim2.new(0,5,0,0)
+title.BackgroundTransparency = 1
+title.Text = "RSZ | Menu"
+title.TextColor3 = Color3.new(1,1,1)
+
+local min = Instance.new("TextButton")
+min.Parent = top
+min.Size = UDim2.new(0,24,0,20)
+min.Position = UDim2.new(1,-55,0.5,-10)
+min.BackgroundColor3 = Color3.fromRGB(50,50,50)
+min.Text = "-"
+
+local close = Instance.new("TextButton")
+close.Parent = top
+close.Size = UDim2.new(0,24,0,20)
+close.Position = UDim2.new(1,-28,0.5,-10)
+close.BackgroundColor3 = Color3.fromRGB(50,50,50)
+close.Text = "X"
+
+drag(main, top)
+
+local open = Instance.new("TextButton")
+open.Parent = main
+open.Size = UDim2.new(1,-10,0,30)
+open.Position = UDim2.new(0,5,0,35)
+open.BackgroundColor3 = Color3.fromRGB(50,50,50)
+open.Text = "Open Tuner"
+open.TextColor3 = Color3.new(1,1,1)
+
+open.MouseButton1Click:Connect(function()
+	createEditor(UDim2.new(0,240,0,320), UDim2.new(0,200,0.5,-160))
+end)
+
+local discord = Instance.new("TextButton")
+discord.Parent = main
+discord.Size = UDim2.new(1,-10,0,30)
+discord.Position = UDim2.new(0,5,0,70)
+discord.BackgroundColor3 = Color3.fromRGB(50,50,50)
+discord.Text = "Copy Discord"
+discord.TextColor3 = Color3.new(1,1,1)
+
+discord.MouseButton1Click:Connect(function()
+	if setclipboard then
+		setclipboard(DISCORD)
+	end
+end)
+
+local credit = Instance.new("TextLabel")
+credit.Parent = main
+credit.Size = UDim2.new(1,0,0,20)
+credit.Position = UDim2.new(0,0,1,-20)
+credit.BackgroundTransparency = 1
+credit.Text = "By Resenzz"
+credit.TextColor3 = Color3.new(1,1,1)
+
+local minimized = false
+
+min.MouseButton1Click:Connect(function()
+	minimized = not minimized
+
+	open.Visible = not minimized
+	discord.Visible = not minimized
+	credit.Visible = not minimized
+end)
+
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
